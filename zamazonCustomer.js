@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const cTable = require("console.table");
 
 //connection info for DB
 var connection = mysql.createConnection({
@@ -14,13 +15,87 @@ var connection = mysql.createConnection({
 connection.connect(function(err){
 	if (err) throw err;
 	console.log("connected as id: "+ connection.threadId);
-	showProducts();
+	start();
 });
 
-function showProducts() {
-	connection.query("SELECT item_id, product_name, price, stock_quantity FROM products", function(err, results) {
-		console.log("\nWELCOME TO ZAMAZON, Your Amazon Alternative!")
-		console.log(results);
-		connection.end();
-	})
+// Which functionality is requested
+function start() {
+	console.log("\nWELCOME TO ZAMAZON, Your Amazon Alternative!")
+    inquirer.prompt({
+        name: "which",
+        type: "list",
+        message: "Please select your program need (*some require id/pw)",
+        choices: ["Customer", "Manager*", "Supervisor*", "Exit"]
+    }).then(function(answer){
+        if (answer.which === "Customer") {
+            showProducts();
+        } else {
+            endProgram();
+        }
+    });
 }
+
+
+// end program (if Exit selected)
+function endProgram() {
+	inquirer.prompt({
+		name: "end",
+		type: "list",
+		message: "Are you sure you want to exit?",
+		choices: ["Yes", "No"]
+}).then(answer, err)
+	if (err) throw console.log("Error: " + err); 
+	if (answer === "Yes"){
+		console.log("Thank you for visiting Zamazon!");
+		connection.end()
+	}else {
+		showProducts();
+		} //end if/else
+} //end endProgram
+
+
+// function to show products to customers
+function showProducts() {
+    connection.query("SELECT item_id, product_name, price, stock_quantity FROM products WHERE stock_quantity > 0", function(err, result) {
+        if (err) throw console.log("Error: " + err);
+        itemListArray = []
+        for(var i = 0; i < result.length; i++){
+            console.log("------------------" +
+                "\n" +
+                "\n Item ID: " + result[i].item_id +
+                "\n Product Name: " + result[i].product +
+                "\n Price: " + result[i].price + 
+                "\n # Available: "  + result[i].stock_quantity +
+                "\n")
+                itemListArray.push(result[i].item_id)
+                }
+        chooseProduct(itemListArray);
+    });
+}  
+
+// select prduct and quantity
+function chooseProduct() {
+ 	inquirer.prompt({
+ 		name: "toBuy",
+ 		type: "input",
+ 		message: "Please enter the ID NUMBER of the item you wish to purchase:"
+ }).then(answer)
+	 console.log("answer is " + answer);
+	 connection.end();
+	//get item they want to buy then ask quantity
+	//check that entry is valid(parseInt the id number)
+		// if not valid, sorry that is not an item, please try again, redisplay chooseProduct
+	// check that quantity is available
+		// if zero, sorry out of stock
+		// if not enough, sorry there are only ___ available
+		//Do you want to buy those?
+			// yes, continue to buyProduct
+			//no, redisplay
+
+  } //end chooseProduct
+
+
+//go here if product available and customer continues
+// function buyProduct(){
+
+// } //end buyProduct
