@@ -63,7 +63,7 @@ function showProducts() {
         itemListArray = []
         for(var i = 0; i < result.length; i++){
             console.log("\n Item ID: " + result[i].item_id +
-    			"| Product Name: " + result[i].product +
+    			"| Product Name: " + result[i].product_name +
                 "| Price: " + result[i].price + 
                 "| # Available: "  + result[i].stock_quantity);
                 itemListArray.push(result[i].item_id)
