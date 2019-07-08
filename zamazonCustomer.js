@@ -2,7 +2,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
-//connection info for DB
+//connection info for zamazon DB
 var connection = mysql.createConnection({
 	host: "Localhost",
 	port: 3306,
@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
 	database: "zamazon_db"
 });
 
-//connect to mysql, database and display products 
+//connect to mysql and start program
 connection.connect(function(err){
 	if (err) throw err;
 	console.log("connected as id: "+ connection.threadId);
@@ -28,7 +28,7 @@ function start() {
         choices: ["Customer", "Manager*", "Supervisor*", "Exit"]
     }).then(function(answer){
         if (answer.which === "Customer") {
-            showProducts();
+            showProducts(); //works to this point
         } else {
             endProgram();
         }
@@ -43,14 +43,16 @@ function endProgram() {
 		type: "list",
 		message: "Are you sure you want to exit?",
 		choices: ["Yes", "No"]
-}).then(answer, err)
-	if (err) throw console.log("Error: " + err); 
+}).then(function(answer){
+	//if (err) throw console.log("Error: " + err); 
 	if (answer === "Yes"){
+		console.log("choice = " + answer);
 		console.log("Thank you for visiting Zamazon!");
 		connection.end()
 	}else {
 		showProducts();
 		} //end if/else
+	}); //end then
 } //end endProgram
 
 
@@ -60,13 +62,10 @@ function showProducts() {
         if (err) throw console.log("Error: " + err);
         itemListArray = []
         for(var i = 0; i < result.length; i++){
-            console.log("------------------" +
-                "\n" +
-                "\n Item ID: " + result[i].item_id +
-                "\n Product Name: " + result[i].product +
-                "\n Price: " + result[i].price + 
-                "\n # Available: "  + result[i].stock_quantity +
-                "\n")
+            console.log("\n Item ID: " + result[i].item_id +
+    			"| Product Name: " + result[i].product +
+                "| Price: " + result[i].price + 
+                "| # Available: "  + result[i].stock_quantity);
                 itemListArray.push(result[i].item_id)
                 }
         chooseProduct(itemListArray);
