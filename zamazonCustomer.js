@@ -3,6 +3,8 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 var itemsListArray;
 
+//================= END of REQUIRE Section ===================================
+
 //connection info for zamazon DB
 var connection = mysql.createConnection({
 	host: "Localhost",
@@ -19,6 +21,8 @@ connection.connect(function(err){
 	start();
 }); 
 
+//========================== END of DATABASE INITIALIZATION ===========================
+
 // Which functionality is requested
 function start() {
 	console.log("\nWELCOME TO ZAMAZON, Your Amazon Alternative!")
@@ -34,9 +38,9 @@ function start() {
             endProgram();
         }
     });
-}
+} // end start
 
-// end program (if Exit selected)
+// end the program (if Exit selected)
 function endProgram() {
 	inquirer.prompt({
 		name: "end",
@@ -44,8 +48,7 @@ function endProgram() {
 		message: "Are you sure you want to exit?",
 		choices: ["Yes", "No"]
 }).then(function(answer){
-	//if (err) throw console.log("Error: " + err); 
-		if (answer.end === "Yes"){
+		if (answer.end === "Yes") {
 		console.log("choice = " + answer.end);
 		console.log("Thank you for visiting Zamazon!");
 		connection.end()
@@ -62,48 +65,44 @@ function showProducts() {
         if (err) throw console.log("Error: " + err);
         itemsListArray = []
         for(var i = 0; i < result.length; i++){
-			
-			// \n Item ID: " + result[i].item_id +
-    		// 	"| Product Name: " + result[i].product_name +
-            //     "| Price: " + result[i].price + 
-            //     "| # Available: "  + result[i].stock_quantity);
-		itemsListArray.push(result[i])
-		console.table("Available Items", itemsListArray);
-                }
-        chooseProduct(itemsListArray);
-    });
-}  
+			itemsListArray.push(result[i])
+			console.table("Available Items", itemsListArray);
+		} //end for
+    chooseProduct(itemsListArray); //pass products to next function
+    }); //end query
+} // end showProducts 
 
 // select prduct and quantity
-function chooseProduct() {
+function chooseProduct(itemsListArray) {
  	inquirer.prompt({
  		name: "toBuy",
- 		type: "input",
- 		message: "Please enter the ID NUMBER of the item you wish to purchase:"
- }, 
- {
+ 		message:"Enter ITEM_ID of item you wish to purchase:",
+     	type: "number"
+	 }, 
+ 	{
 	 name: "amount",
-	 type: "input",
-	 message: "How many do you want?"
- }
- ).then(answer)
+	 type: "number",
+	 message: "How many do you want?",
+	 default: 1
+ 	}
+ ).then(function(answer) {
 	console.log("product is " + answer.toBuy);
 	console.log("amount is " + answer.amount);
 	let query = `SELECT * FROM products WHERE item_id = ?`;
 	connection.query(query, answer.toBuy, function(err, res){
-	if (err) throw err ;{
-		if (parseInt(answer.amount) > parseInt(res.stock_quantity)) {
-			} else {
-				console.log("Invalid item, please try again");
-				chooseProduct();
-		} // end if else
-	}
+		if (err) throw err ;{
+			if(parseInt(answer.toBuy))
+			if (parseInt(answer.amount) > parseInt(res.stock_quantity)) {
+				} else {
+					console.log("Invalid item, please try again");
+					chooseProduct();
+			} // end else
+		} // end if
+	  }); //end connectionQuery
+	})
+} //end chooseProduct
 
-  } );
-}
-
-  //end chooseProduct
-	//get item they want to buy then askuantity
+//get item they want to buy then askuantity
 	//check that entry is valid(parseInt the id number)
 		// if not valid, sorry that is not an item, please try again, redisplay chooseProduct
 	// check that quantity is available
