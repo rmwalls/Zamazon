@@ -73,53 +73,38 @@ function showProducts() {
 } // end showProducts 
 
 // select product and quantity
-function chooseProduct(){
+function chooseProduct() {
  	inquirer.prompt([
 	{
  		name: "toBuy",
  		message:"Enter ITEM_ID of item you wish to purchase:",
      	type: "number"
-	 } //end inq
+	 }, 
+ 	{
+	 name: "amount",
+	 type: "number",
+	 message: "How many do you want?"
+	 }
 	]
 	).then(function(answer) {
-		let item = parseInt(answer.toBuy);
-		console.log("item is " + item);
+		var item = parseInt(answer.toBuy);
+		var quantity = parseInt(answer.amount);
 		let query = `SELECT * FROM products WHERE item_id = ?`;
 		connection.query(query, item_id, function(err, res){
 			if (err) throw err ;{
 				if(isNaN(item)) {
 					console.log("Invalid item, please try again");
 					chooseProduct();
-				} else {
-					howMany();
-				} //end else
+				}
+				if (quantity > parseInt(res.stock_quantity)) {
+					} else {
+						console.log("Your request exceeds the amount available, please try again");
+						chooseProduct();
+				} // end else
 			} // end if
 		}); //end connectionQuery
 	}) //end then
 } //end chooseProduct
-
-function howMany(){
-	inquirer.prompt([
-		{
-			name: "amount",
-			type: "number",
-			message: "How many do you want?"
-		} //end inq
-	]
-	).then(function(answer) {
-		let quantity = parseInt(answer.amount);
-		console.log("quant is " + quantity);
-		connection.query(query, stock_quantity, function(err, res){
-			if (err) throw err ; {
-				if (quantity > parseInt(res.stock_quantity)) {
-				} else {
-					console.log("Your request exceeds the amount available, please try again");
-					howMany();
-				}
-			} //end if
-		});
-	})
-}
 
 //get item they want to buy then askuantity
 	//check that entry is valid(parseInt the id number)

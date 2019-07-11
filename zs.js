@@ -59,41 +59,40 @@ function endProgram() {
 } //end endProgram
 
 
-// function to show products to customers
+// function to show products to customers ++++ products displayed
 function showProducts() {
     connection.query("SELECT item_id, product_name, price, stock_quantity FROM products WHERE stock_quantity > 0", function(err, result) {
         if (err) throw console.log("Error: " + err);
         itemsListArray = []
         for(var i = 0; i < result.length; i++){
 			itemsListArray.push(result[i])
-			console.table("Available Items", itemsListArray);
+            console.table("Available Items", itemsListArray);
 		} //end for
     chooseProduct(itemsListArray); //pass products to next function
     }); //end query
 } // end showProducts 
 
+
 // select product and quantity
-function chooseProduct(){
+function chooseProduct(itemsListArray){
  	inquirer.prompt([
 	{
  		name: "toBuy",
- 		message:"Enter ITEM_ID of item you wish to purchase:",
-     	type: "number"
+        type: "input",
+        message:"Enter ITEM_ID of item you wish to purchase:",
 	 } //end inq
 	]
 	).then(function(answer) {
 		let item = parseInt(answer.toBuy);
 		console.log("item is " + item);
 		let query = `SELECT * FROM products WHERE item_id = ?`;
-		connection.query(query, item_id, function(err, res){
-			if (err) throw err ;{
+		connection.query(query, item, function(err, res){
 				if(isNaN(item)) {
-					console.log("Invalid item, please try again");
+					console.log("Invalid item, please try again"); //works for non-numb but need to add for non-displayed number
 					chooseProduct();
 				} else {
-					howMany();
+                    howMany();
 				} //end else
-			} // end if
 		}); //end connectionQuery
 	}) //end then
 } //end chooseProduct
@@ -103,20 +102,18 @@ function howMany(){
 		{
 			name: "amount",
 			type: "number",
-			message: "How many do you want?"
+			message: "How many do you want?" //++++++++++++ good to here
 		} //end inq
 	]
 	).then(function(answer) {
 		let quantity = parseInt(answer.amount);
 		console.log("quant is " + quantity);
 		connection.query(query, stock_quantity, function(err, res){
-			if (err) throw err ; {
 				if (quantity > parseInt(res.stock_quantity)) {
 				} else {
 					console.log("Your request exceeds the amount available, please try again");
 					howMany();
 				}
-			} //end if
 		});
 	})
 }
