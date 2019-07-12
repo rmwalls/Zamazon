@@ -39,7 +39,9 @@ sufficient stock, the order is cancelled and the user is prompted to try again.
     </ul>
 </ul>
 
+# View Video of Program
 
-
-    
-
+<video autoplay>
+  <source src="video/Zamazon.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
