@@ -31,10 +31,10 @@ function start() {
     inquirer.prompt({
         name: "which",
         type: "list",
-        message: "Please select your program need (*some require id/pw)",
-        choices: ["Customer", "Manager*", "Supervisor*", "Exit"]
+        message: "Would you like to place an Order or Exit?",
+        choices: ["Order", "Exit"]
     }).then(function(answer){
-        if (answer.which === "Customer") {
+        if (answer.which === "Order") {
             showProducts(); 
         } else {
             endProgram();
@@ -70,59 +70,32 @@ function showProducts() {
 			itemsListArray.push(result[i])
             console.table("Available Items", itemsListArray);
 		} //end for
-    chooseProduct(itemsListArray); //pass products to next function
+    	chooseProduct(); 
     }); //end query
 } // end showProducts 
 
-
 // select product and quantity
-function chooseProduct(itemsListArray){
- 	inquirer.prompt([
-	{
- 		name: "toBuy",
-        type: "input",
-        message:"Enter ITEM_ID of item you wish to purchase:",
-	 } //end inq
-	]
-	).then(function(answer) {
-		item = parseInt(answer.toBuy);
-		console.log("item is " + item);
-		let query = `SELECT * FROM products WHERE item_id = ?`;
-		connection.query(query, item, function(err, res){
-			console.log("item name is " + res.product_name);
-				if(isNaN(item)) {
-					console.log("Invalid item, please try again"); //works for non-numb but need to add for non-displayed number
-					chooseProduct();
-				} else {
-                    howMany();
-				} //end else
-		}); //end connectionQuery
-	}) //end then
-} //end chooseProduct
-
-function howMany(){
+function chooseProduct(){
 	inquirer.prompt([
+   		{
+			name: "toBuy",
+			message:"Enter ITEM_ID of item you wish to purchase:",
+			type: "number"
+		}, 
 		{
 			name: "amount",
 			type: "number",
-			message: "How many do you want?" 
+			message: "How many do you want?"
 		} //end inq
-	]
-	).then(function(answer) {
-		quantity = parseInt(answer.amount);
-		console.log("the item is " + item);
-		console.log("quant is " + quantity); //++++++++++++ good to here
-		let query = `SELECT * FROM products WHERE stock_quantity = ?`;
-		connection.query(query, quantity, function(err, res){
-				if (quantity > parseInt(res.stock_quantity)) {
-					console.log("quantity is " + quantity + "stock is " + res.stock_quantity);8
-				} else {
-					console.log("Your request exceeds the amount available, please try again");
-					howMany();
-				}
-		});
-	})
+   ]
+   ).then(function(answer) {
+	   let itemID = parseInt(answer.toBuy);
+	   console.log("item is " + itemID);
+	   let quantity = parseInt(answer.amount);
+	   console.log("quant is " + quantity);
+   })
 }
+
 
 //get item they want to buy then askuantity
 	//check that entry is valid(parseInt the id number)
