@@ -2,6 +2,8 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 var itemsListArray;
+var item;
+var quantity;
 
 //================= END of REQUIRE Section ===================================
 
@@ -47,7 +49,7 @@ function endProgram() {
 		type: "list",
 		message: "Are you sure you want to exit?",
 		choices: ["Yes", "No"]
-}).then(function(answer){
+	}).then(function(answer){
 		if (answer.end === "Yes") {
 		console.log("choice = " + answer.end);
 		console.log("Thank you for visiting Zamazon!");
@@ -83,10 +85,11 @@ function chooseProduct(itemsListArray){
 	 } //end inq
 	]
 	).then(function(answer) {
-		let item = parseInt(answer.toBuy);
+		item = parseInt(answer.toBuy);
 		console.log("item is " + item);
 		let query = `SELECT * FROM products WHERE item_id = ?`;
 		connection.query(query, item, function(err, res){
+			console.log("item name is " + res.product_name);
 				if(isNaN(item)) {
 					console.log("Invalid item, please try again"); //works for non-numb but need to add for non-displayed number
 					chooseProduct();
@@ -102,14 +105,17 @@ function howMany(){
 		{
 			name: "amount",
 			type: "number",
-			message: "How many do you want?" //++++++++++++ good to here
+			message: "How many do you want?" 
 		} //end inq
 	]
 	).then(function(answer) {
-		let quantity = parseInt(answer.amount);
-		console.log("quant is " + quantity);
-		connection.query(query, stock_quantity, function(err, res){
+		quantity = parseInt(answer.amount);
+		console.log("the item is " + item);
+		console.log("quant is " + quantity); //++++++++++++ good to here
+		let query = `SELECT * FROM products WHERE stock_quantity = ?`;
+		connection.query(query, quantity, function(err, res){
 				if (quantity > parseInt(res.stock_quantity)) {
+					console.log("quantity is " + quantity + "stock is " + res.stock_quantity);8
 				} else {
 					console.log("Your request exceeds the amount available, please try again");
 					howMany();
