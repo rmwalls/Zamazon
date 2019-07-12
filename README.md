@@ -43,5 +43,5 @@ sufficient stock, the order is cancelled and the user is prompted to try again.
 
 <video autoplay>
   <source src="video/Zamazon.mp4" type="video/mp4">
-Your browser does not support the video tag.
+Your browser does not support the video tag so here's a link <a href="video/Zamazon.mp4>Zamazon Video</a>
 </video>
